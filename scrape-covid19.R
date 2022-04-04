@@ -102,21 +102,23 @@ tbl_clean <- tbl_risk %>%
   mutate(rank_type = str_extract(rank_raw, "(.+)(?=地区)"),
          rank_n = as.numeric(str_extract(rank_raw, "(?<=地区)(\\d{1,4})")),
          time_public = lubridate::ymd_hm(
-           str_extract(time_raw, "(?<=截至北京时间 )(.+)")
+           str_extract(time_raw, "(?<=截至北京时间 )(.+)"),
+           tz = "GMT"
          )) %>%
   add_column(index_full = 1:nrow(.), .before = 'i')
   
 timestamp <- str_replace_all(
-  as.character(lubridate::ymd_hms(Sys.time())),
+  as.character(lubridate::ymd_hms(Sys.time(),tz = "GMT")),
   " |:",
   "_")
 
+
 # Generate URL for full text download EO-77.pdf
 baseurl <- "data/csv/area_risk_scraped_"
-path_out  <- paste0(baseurl,timestamp,".csv")
+path_out  <- paste0(baseurl,timestamp,".rds")
 
 # Write out the scraped data
-write_csv(tbl_clean, path_out)
+write_rds(tbl_clean, path_out)
 
 
 # quit and release process
