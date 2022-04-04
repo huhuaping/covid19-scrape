@@ -1,0 +1,29 @@
+on:
+  schedule:
+    - cron: '20 23 * * *'
+  push:
+    branches: main
+
+name: Scrape covid19 risk area
+
+# see [twitter](https://twitter.com/RCoderWeb/status/1495142643726225413)
+
+jobs:
+  render:
+    name: Scrape covid19 risk area
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@master
+      - uses: browser-actions/setup-firefox@latest 
+      - run: firefox --version 
+      - name: Install RSelenium  and dependencies
+        run: Rscript -e 'install.packages(c("tidyverse","RSelenium","dplyr","lubridate"))'
+      - name: Scrape the data
+        run: Rscript scrape-covid19.R
+      - name: Commit results
+        run: |
+          git add -A
+          git commit -m 'New Executive Order signed - data updated!' || echo "No changes to commit"
+          git push
