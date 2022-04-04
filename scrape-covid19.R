@@ -36,60 +36,62 @@ for (i in 1:n_zone) {
   subtitle <- elm_zone$findChildElement('xpath', xpath_target)$getElementText() %>%
     unlist()
   
-  if (subtitle =='') stop("No more exist risk zone, thus stop scrape!")
+  if (subtitle !='') {
+    # get time
+    xpath_target <- "*//div[contains(@class, 'time___')]"
+    time_public <- elm_zone$findChildElement('xpath', xpath_target)$getElementText() %>%
+      unlist()  
+    
+    # access block div
+    xpath_target <- "div[contains(@class, 'block___')]"
+    elms_block <- elm_zone$findChildElements(using = 'xpath', value = xpath_target)
+    n_block <- length(elms_block)
+    
+    cat('i=',i,subtitle,'has', n_block,'provinces \n', sep = " ")
+    
+    
+    # loop for blocks
+    # j <- 2
+    for (j in 1:n_block) {
+      elm_block <- elms_block[[j]]
+      
+      # access province div
+      xpath_target <- "*//div[contains(@class, 'center___')]" # do not use 'placeholder__'
+      province <- elm_block$findChildElement('xpath', xpath_target)$getElementText() %>%
+        unlist()
+      
+      
+      
+      # access blockline > city
+      xpath_target <- "*//div[contains(@class, 'blockLine___')]//div[contains(@class, 'city__')]"
+      elm_cities <- elm_block$findChildElements('xpath', xpath_target)
+      cities <- sapply(elm_cities, function(x) x$getElementText() %>% unlist())
+      
+      # access blockline > units
+      xpath_target <- "*//div[contains(@class, 'blockLine___')]//div[2]"
+      elm_units <- elm_block$findChildElements('xpath', xpath_target)
+      units <- sapply(elm_units, function(x) x$getElementText() %>% unlist())
+      
+      cat("j=",j," has units ", length(units),'\n', sep ="")
+      
+      
+      # Construct a data frame
+      tbl_raw <- tibble(
+        i =i, j =j,
+        rank_raw = subtitle,
+        time_raw = time_public,
+        province = province,
+        city =cities,
+        unit = units
+      ) %>%
+        add_column(index = 1:nrow(.), .before = "rank_raw") 
+      
+      
+      tbl_risk <- bind_rows(tbl_risk, tbl_raw)
+    } # end loop blocks
+    
+  } # end if
   
-  # get time
-  xpath_target <- "*//div[contains(@class, 'time___')]"
-  time_public <- elm_zone$findChildElement('xpath', xpath_target)$getElementText() %>%
-    unlist()  
-  
-  # access block div
-  xpath_target <- "div[contains(@class, 'block___')]"
-  elms_block <- elm_zone$findChildElements(using = 'xpath', value = xpath_target)
-  n_block <- length(elms_block)
-  
-  cat('i=',i,subtitle,'has', n_block,'provinces \n', sep = " ")
-  
-  
-  # loop for blocks
-  # j <- 2
-  for (j in 1:n_block) {
-    elm_block <- elms_block[[j]]
-    
-    # access province div
-    xpath_target <- "*//div[contains(@class, 'center___')]" # do not use 'placeholder__'
-    province <- elm_block$findChildElement('xpath', xpath_target)$getElementText() %>%
-      unlist()
-    
-   
-    
-    # access blockline > city
-    xpath_target <- "*//div[contains(@class, 'blockLine___')]//div[contains(@class, 'city__')]"
-    elm_cities <- elm_block$findChildElements('xpath', xpath_target)
-    cities <- sapply(elm_cities, function(x) x$getElementText() %>% unlist())
-    
-    # access blockline > units
-    xpath_target <- "*//div[contains(@class, 'blockLine___')]//div[2]"
-    elm_units <- elm_block$findChildElements('xpath', xpath_target)
-    units <- sapply(elm_units, function(x) x$getElementText() %>% unlist())
-    
-    cat("j=",j," has units ", length(units),'\n', sep ="")
-    
-    
-    # Construct a data frame
-    tbl_raw <- tibble(
-      i =i, j =j,
-      rank_raw = subtitle,
-      time_raw = time_public,
-      province = province,
-      city =cities,
-      unit = units
-    ) %>%
-      add_column(index = 1:nrow(.), .before = "rank_raw") 
-    
-    
-    tbl_risk <- bind_rows(tbl_risk, tbl_raw)
-  } # end loop blocks
   
   
 } # end loop zones
