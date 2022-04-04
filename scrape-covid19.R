@@ -10,6 +10,7 @@ cat("Downloading covid19 risk area data...")
 
 # We start the RSelenium environment
 driver <- rsDriver(browser=c("firefox"),port = 4444L)
+Sys.sleep(5)
 rd <- driver[["client"]]
 rd$maxWindowSize()
 
