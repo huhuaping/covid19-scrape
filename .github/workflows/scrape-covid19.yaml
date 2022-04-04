@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '20 23 * * *'
+    - cron: '25 23 * * *'
   push:
     branches: main
 
@@ -11,7 +11,7 @@ name: Scrape covid19 risk area
 jobs:
   render:
     name: Scrape covid19 risk area
-    runs-on: windows-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
