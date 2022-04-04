@@ -108,13 +108,14 @@ tbl_clean <- tbl_risk %>%
   add_column(index_full = 1:nrow(.), .before = 'i')
   
 timestamp <- str_replace_all(
-  as.character(lubridate::ymd_hms(Sys.time(),tz = "GMT")),
+  as.character(lubridate::now(tzone = 'Asia/Shanghai')),
   " |:",
   "_")
 
 
+
 # Generate URL for full text download EO-77.pdf
-baseurl <- "data/csv/area_risk_scraped_"
+baseurl <- "data/rds/area_risk_scraped_"
 path_out  <- paste0(baseurl,timestamp,".rds")
 
 # Write out the scraped data
