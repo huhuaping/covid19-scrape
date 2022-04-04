@@ -17,15 +17,15 @@ rd$maxWindowSize()
 url_area <- "https://ncov.dxy.cn/ncovh5/view/pneumonia_risks?from=dxy&link=&share=&source="
 rd$navigate(url_area)
 
+# access risk zone
+xpath_target <- "*//div[contains(@class,'riskZone___')]"
+elms_zone <- rd$findElements(using =  'xpath', value = xpath_target)
+n_zone <- length(elms_zone)
 
 # loop risk zones
 # i <- 1
 tbl_risk <- NULL
 for (i in 1:n_zone) {
-  # access risk zone
-  xpath_target <- "*//div[contains(@class,'riskZone___')]"
-  elms_zone <- rd$findElements(using =  'xpath', value = xpath_target)
-  n_zone <- length(elms_zone)
   
   elm_zone <- elms_zone[[i]]
   
@@ -116,8 +116,8 @@ write_csv(tbl_clean, path_out)
 
 
 # quit and release process
-remDr$closeServer()
-remDr$close()
-rm(remDr)
-rm(driver)
+rd$closeServer()
+rd$close()
+rm(rd)
+#rm(driver)
 #gc()
