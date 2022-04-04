@@ -12,6 +12,7 @@ cat("Downloading covid19 risk area data...")
 driver <- rsDriver(browser=c("firefox"),port = 4444L)
 Sys.sleep(5)
 rd <- driver[["client"]]
+rd$setTimeout(type = 'page load', milliseconds = 20000) 
 rd$maxWindowSize()
 
 # send the url to the Firefox browser
