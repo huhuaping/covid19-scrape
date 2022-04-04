@@ -16,6 +16,7 @@ rd$maxWindowSize()
 # send the url to the Firefox browser
 url_area <- "https://ncov.dxy.cn/ncovh5/view/pneumonia_risks?from=dxy&link=&share=&source="
 rd$navigate(url_area)
+Sys.sleep(5)
 
 # access risk zone
 xpath_target <- "*//div[contains(@class,'riskZone___')]"
