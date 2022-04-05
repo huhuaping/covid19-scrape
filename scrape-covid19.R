@@ -8,13 +8,15 @@ library(lubridate)
 cat("Downloading covid19 risk area data...")
 
 
-# We start the RSelenium environment
+#==== start the RSelenium environment====
 driver <- rsDriver(browser=c("firefox"),port = 4444L)
 Sys.sleep(5)
 rd <- driver[["client"]]
 rd$setTimeout(type = 'page load', milliseconds = 20000) 
 rd$maxWindowSize()
 
+
+#==== scrape risk area =====
 # send the url to the Firefox browser
 url_area <- "https://ncov.dxy.cn/ncovh5/view/pneumonia_risks?from=dxy&link=&share=&source="
 rd$navigate(url_area)
@@ -123,7 +125,118 @@ path_out  <- paste0(baseurl,timestamp,".rds")
 write_rds(tbl_clean, path_out)
 
 
-# quit and release process
+
+#====part 2 scrape covid19 daily=====
+
+# send the url to the Firefox browser
+url_area <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
+rd$navigate(url_area)
+Sys.sleep(5)
+
+# get time public
+xpath_target <- "*//div[contains(@class, 'main')]//span[contains(@class, 'dateTips')]"
+time_raw <- rd$findElement(using =  'xpath', value = xpath_target)$getElementText() %>%
+  unlist() %>%
+  str_extract(., "(?<=截至北京时间)(.+)") %>%
+  str_trim(., side = "both")
+
+# access expand blocks
+xpath_target <- "*//div[contains(@class,'areaBox___')][1]//div[contains(@class, 'expandBlock___')]"
+
+elms_expandblock <- rd$findElements(using =  'xpath', value = xpath_target)
+n_expandblock <- length(elms_expandblock)
+
+cat("we find totaly", n_expandblock, "provinces collapsed \n", sep = " ")
+
+# click arrow img to expand all provinces
+xpath_target <- "div[contains(@class, 'areaBlock')]//p[contains(@class, 'subBlock1___')]//img"
+
+## helper function
+click_childElm <- function(node , xpath=xpath_target){
+  elm <- node$findChildElement(using = 'xpath', value = xpath)
+  elm$clickElement()
+}
+## click all 
+sapply(elms_expandblock, click_childElm)
+Sys.sleep(0.5)
+cat("we now expand", n_expandblock, "provinces \n", sep = " ")
+
+
+# all nodes areaBlock
+xpath_target <- "*//div[contains(@class,'areaBox___')][1]//div[contains(@class, 'expandBlock___')]//div[contains(@class,'areaBlock')]"
+
+elms_areablock <- rd$findElements(using =  'xpath', value = xpath_target)
+n_areablock <- length(elms_areablock)
+cat("It shows totally", n_areablock, " rows (provinces/cities) \n", sep = " ")
+
+## step 1: get all areaBlock class name
+class_areablock<- unlist(sapply(elms_areablock, function(x){x$getElementAttribute('class')})) %>%
+  str_extract(., "(areaBlock\\d{1})")
+Sys.sleep(0.5)
+cat("step 1: get all areaBlock class name. \n", sep = " ")
+
+
+## helper function 
+get_childText <- function(nodes, xpath =xpath_target){
+  elems <- sapply(nodes, function(x) x$findChildElements(using = "xpath", value = xpath))
+  out <- unlist(sapply(elems, function(x) unlist(x$getElementText())))
+}
+
+## step 2: get all province or city names
+xpath_target <- "p[contains(@class, 'subBlock1')]"
+area_name <- get_childText(nodes = elms_areablock,xpath = xpath_target)
+Sys.sleep(0.5)
+cat("step 2: get all province or city names. \n", sep = " ")
+
+
+## step 3: get yesterday new cases numbers
+xpath_target <- "p[contains(@class, 'subBlock2')]"
+cases_newadd <- get_childText(nodes = elms_areablock,xpath = xpath_target)
+Sys.sleep(0.5)
+cat("step 3: get yesterday new cases numbers. \n", sep = " ")
+
+
+## step 4: get current covid19 cases numbers
+xpath_target <- "p[contains(@class, 'subBlock3')]"
+cases_current <- get_childText(nodes = elms_areablock,xpath = xpath_target)
+Sys.sleep(0.5)
+cat("step 4: get current covid19 cases numbers. \n", sep = " ")
+
+
+## step 5: get risk area numbers
+xpath_target <- "p[contains(@class, 'subBlock4')]"
+risk_area <- get_childText(nodes = elms_areablock,xpath = xpath_target)
+Sys.sleep(0.5)
+cat("step 5: get risk area numbers. \n", sep = " ")
+
+
+# construct tibble
+tbl_cases <- tibble(area_block = class_areablock,
+                    area_name = area_name,
+                    cases_newadd = cases_newadd,
+                    cases_current = cases_current,
+                    risk_area = risk_area
+                    ) %>%
+  add_column(index = 1:nrow(.), .before = "area_block")
+
+
+timestamp <- str_replace_all(
+  as.character(lubridate::now(tzone = 'Asia/Shanghai')),
+  " |:",
+  "_")
+
+
+# Generate URL for full text download EO-77.pdf
+baseurl <- "data/rds-cases/area_cases_scraped_"
+path_out  <- paste0(baseurl,timestamp,".rds")
+
+# Write out the scraped data
+write_rds(tbl_cases, path_out)
+
+cat("Finnaly,  write data table out. \n", sep = " ")
+
+
+#==== quit and release process====
 rd$closeServer()
 rd$close()
 rm(rd)
