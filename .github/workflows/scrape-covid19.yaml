@@ -2,7 +2,7 @@ name: Scrape covid19 risk area
 on:
   schedule:
     #- cron: '30 5,9,13,17,21 * * *'
-    - cron: '11 17 * * *'
+    - cron: '30 17 * * *'
   push:
     branches: main
   # Allows you to run this workflow manually from the Actions tab
@@ -16,14 +16,7 @@ jobs:
   # This workflow contains a single job called "generate-data"
   generate-data:
     # The type of runner that the job will run on
-    runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {os: ubuntu-latest,   r: 'release'}
+    runs-on: ubuntu-latest
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -32,8 +25,7 @@ jobs:
       
       - uses: r-lib/actions/setup-r@master
         with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }} 
+          r-version: 'release'
           
       - name: Setup renv
         run: |
