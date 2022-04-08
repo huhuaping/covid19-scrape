@@ -1,28 +1,47 @@
+name: Scrape covid19 risk area
 on:
   schedule:
     #- cron: '30 5,9,13,17,21 * * *'
-    - cron: '0 */4 * * *'
+    - cron: '0 5 * * *'
   push:
     branches: main
-
-name: Scrape covid19 risk area
-
 # see [twitter](https://twitter.com/RCoderWeb/status/1495142643726225413)
+# see [blog](https://sabeeh.medium.com/using-github-actions-as-a-job-scheduler-for-r-scripts-7b92539372f4)
 
 jobs:
   render:
     name: Scrape covid19 risk area
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-r@v1
-      - uses: r-lib/actions/setup-r@master
+      - uses: actions/checkout@v2 # Checkout branch into the runner
+      - uses: r-lib/actions/setup-r@master # Set up R runtime
+        with:
+          r-version: 'release'
+          
+      - name: Setup renv # Set up R env to install packages
+        run: |
+          install.packages('remotes')
+          remotes::install_github("rstudio/renv")
+        shell: Rscript {0}
+        
+      - uses: actions/cache@v2 # Cache packages so won't be compiled everytime job is run
+        with:
+          path: ~/.local/share/renv
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
+            
+      - name: Install dependencies # Install the dependencies eg. Dplyr, tidyverse etc
+        run: renv::restore()
+        shell: Rscript {0}
+          
       - uses: browser-actions/setup-firefox@latest 
-      - run: firefox --version 
-      - name: Install RSelenium  and dependencies
-        run: Rscript -e 'install.packages(c("tidyverse","RSelenium","dplyr","lubridate"))'
+      - run: firefox --version
+      
       - name: Scrape the data
         run: Rscript scrape-covid19.R
+        shell: Rscript {0}
+      
       - name: Commit results
         run: |
           git add -A
