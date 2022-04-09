@@ -1,7 +1,8 @@
 on:
   schedule:
+    - cron: '23 7 * * *'
     #- cron: '30 5,9,13,17,21 * * *'
-    - cron: '0 */4 * * *'
+    #- cron: '0 */4 * * *'
   push:
     branches: main
 
@@ -10,8 +11,7 @@ name: Scrape covid19 risk area
 # see [twitter](https://twitter.com/RCoderWeb/status/1495142643726225413)
 
 jobs:
-  render:
-    name: Scrape covid19 risk area
+  bot-post:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
