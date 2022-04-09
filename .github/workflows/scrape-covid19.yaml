@@ -1,57 +1,28 @@
-name: Scrape covid19 risk area
 on:
   schedule:
     #- cron: '30 5,9,13,17,21 * * *'
-    - cron: '30 17 * * *'
+    - cron: '0 */4 * * *'
   push:
     branches: main
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-  
-# see [twitter](https://twitter.com/RCoderWeb/status/1495142643726225413)
-# see [blog](https://sabeeh.medium.com/using-github-actions-as-a-job-scheduler-for-r-scripts-7b92539372f4)
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+name: Scrape covid19 risk area
+
+# see [twitter](https://twitter.com/RCoderWeb/status/1495142643726225413)
+
 jobs:
-  # This workflow contains a single job called "generate-data"
-  generate-data:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  render:
+    name: Scrape covid19 risk area
+    runs-on: macos-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+      - uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-r@master
-        with:
-          r-version: 'release'
-          
-      - name: Setup renv
-        run: |
-          install.packages('remotes')
-          remotes::install_github("rstudio/renv")
-        shell: Rscript {0}
-        
-      - uses: actions/cache@v2
-        with:
-          path: ~/.local/share/renv
-          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-renv-
-      - name: Install dependencies
-        run: |
-          renv::restore()
-        shell: Rscript {0}
-  
       - uses: browser-actions/setup-firefox@latest 
-      - run: firefox --version
-      
+      - run: firefox --version 
+      - name: Install RSelenium  and dependencies
+        run: Rscript -e 'install.packages(c("tidyverse","RSelenium","dplyr","lubridate"))'
       - name: Scrape the data
-        run: |
-          source("Rscript scrape-covid19.R", encoding ="UTF-8")
-        shell: Rscript {0}
-      
+        run: Rscript scrape-covid19.R
       - name: Commit results
         run: |
           git add -A
