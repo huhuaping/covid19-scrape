@@ -2,7 +2,7 @@ name: Scrape covid19 risk area
 on:
   schedule:
     #- cron: '30 5,9,13,17,21 * * *'
-    - cron: '55 20 * * *'
+    - cron: '05 21 * * *'
   push:
     branches: main
   # Allows you to run this workflow manually from the Actions tab
@@ -16,7 +16,7 @@ jobs:
   # This workflow contains a single job called "generate-data"
   generate-data:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,7 +34,7 @@ jobs:
         
       - uses: actions/cache@v2
         with:
-          path: ~/.local/share/renv
+          path: ~/Library/Application Support/renv #~/.local/share/renv
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: |
             ${{ runner.os }}-renv-
