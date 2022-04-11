@@ -2,7 +2,7 @@ name: Scrape covid19 risk area
 on:
   schedule:
     #- cron: '30 5,9,13,17,21 * * *'
-    - cron: '12 21 * * *'
+    - cron: '22 21 * * *'
   push:
     branches: main
   # Allows you to run this workflow manually from the Actions tab
@@ -48,7 +48,8 @@ jobs:
       
       - name: Scrape the data
         run: |
-          source("Rscript scrape-covid19.R", encoding ="UTF-8")
+          Rscript scrape-covid19.R
+        shell: Rscript {0}
       
       - name: Commit results
         run: |
