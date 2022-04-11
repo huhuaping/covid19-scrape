@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.1.2",
+    "Version": "4.1.1",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -910,10 +910,15 @@
     },
     "reprex": {
       "Package": "reprex",
-      "Version": "2.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "911d101becedc0fde495bd910984bdc8",
+      "Version": "2.0.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "tidyverse",
+      "RemoteRepo": "reprex",
+      "RemoteRef": "main",
+      "RemoteSha": "318363cf7a911010ebb1593765cc21ec207d2d10",
+      "Hash": "6de24e8585187f023bfec5da205d81b1",
       "Requirements": [
         "callr",
         "cli",
@@ -921,6 +926,7 @@
         "fs",
         "glue",
         "knitr",
+        "lifecycle",
         "rlang",
         "rmarkdown",
         "rstudioapi",
