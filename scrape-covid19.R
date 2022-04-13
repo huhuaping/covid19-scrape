@@ -5,6 +5,10 @@ library(RSelenium)
 library(dplyr)
 library(lubridate)
 
+library(DBI)
+require(dbplyr)
+require(RSQLite)
+
 cat("Downloading covid19 risk area data...")
 
 
@@ -15,11 +19,16 @@ rd <- driver[["client"]]
 rd$setTimeout(type = 'page load', milliseconds = 20000) 
 rd$maxWindowSize()
 
+#==== part 0 prepare SQL ====
 
-#==== scrape risk area =====
+mydb <- dbConnect(RSQLite::SQLite(), "data/sql/covid19-dxy.db")
+
+
+#==== part 1 scrape risk area =====
 # send the url to the Firefox browser
 url_area <- "https://ncov.dxy.cn/ncovh5/view/pneumonia_risks?from=dxy&link=&share=&source="
 rd$navigate(url_area)
+time_access <- lubridate::now(tzone = 'Asia/Shanghai')
 Sys.sleep(5)
 
 # access risk zone
@@ -106,12 +115,13 @@ tbl_clean <- tbl_risk %>%
          rank_n = as.numeric(str_extract(rank_raw, "(?<=地区)(\\d{1,4})")),
          time_public = lubridate::ymd_hm(
            str_extract(time_raw, "(?<=截至北京时间 )(.+)"),
-           tz = "GMT"
+           tz='Asia/Shanghai'
          )) %>%
-  add_column(index_full = 1:nrow(.), .before = 'i')
+  add_column(index_full = 1:nrow(.), .before = 'i') %>%
+  mutate(time_stamp = time_access)
   
 timestamp <- str_replace_all(
-  as.character(lubridate::now(tzone = 'Asia/Shanghai')),
+  as.character(time_access),
   " |:",
   "_")
 
@@ -124,13 +134,18 @@ path_out  <- paste0(baseurl,timestamp,".rds")
 # Write out the scraped data
 write_rds(tbl_clean, path_out)
 
-
+# add to my database
+dbWriteTable(mydb, "area_risk", 
+             tbl_clean,
+             append=TRUE,overwite=FALSE)
+cat(paste0("Add ", nrow(tbl_clean), " rows to sql table 'area_risk'. \n"))
 
 #====part 2 scrape covid19 daily=====
 
 # send the url to the Firefox browser
 url_area <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 rd$navigate(url_area)
+time_access <- lubridate::now(tzone = 'Asia/Shanghai')
 Sys.sleep(5)
 
 # get time public
@@ -215,13 +230,15 @@ tbl_cases <- tibble(area_block = class_areablock,
                     area_name = area_name,
                     cases_newadd = cases_newadd,
                     cases_current = cases_current,
-                    risk_area = risk_area
+                    risk_area = risk_area,
+                    time_raw = time_raw,
+                    time_stamp = time_access
                     ) %>%
   add_column(index = 1:nrow(.), .before = "area_block")
 
 
 timestamp <- str_replace_all(
-  as.character(lubridate::now(tzone = 'Asia/Shanghai')),
+  as.character(time_access),
   " |:",
   "_")
 
@@ -232,8 +249,16 @@ path_out  <- paste0(baseurl,timestamp,".rds")
 
 # Write out the scraped data
 write_rds(tbl_cases, path_out)
-
 cat("Finnaly,  write data table out. \n", sep = " ")
+
+# add to my database
+dbWriteTable(mydb, "area_case", 
+             tbl_cases,
+             append=TRUE,overwite=FALSE)
+cat(paste0("Add ", nrow(tbl_cases), " rows to sql table 'area_case'. \n"))
+
+# disconnect to my database
+dbDisconnect(mydb)
 
 
 #==== quit and release process====
