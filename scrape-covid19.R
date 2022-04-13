@@ -144,7 +144,7 @@ if (time_tar > time_check) {
   path_out  <- paste0(baseurl,timestamp,".rds")
   
   # Write out the scraped data
-  #write_rds(tbl_cases, path_out)
+  write_rds(tbl_cases, path_out)
   cat("Finnaly,  write data table out. \n", sep = " ")
   
   # add to my database
@@ -270,7 +270,7 @@ if (time_tar > time_check) {
   path_out  <- paste0(baseurl,timestamp,".rds")
   
   # Write out the scraped data
-  #write_rds(tbl_clean, path_out)
+  write_rds(tbl_clean, path_out)
   
   # add to my database
   dbWriteTable(mydb, "area_risk", 
