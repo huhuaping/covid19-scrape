@@ -8,7 +8,7 @@ on:
   push:
     branches: main
   # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  #workflow_dispatch:
   
 # see [twitter](https://twitter.com/RCoderWeb/status/1495142643726225413)
 # see [blog](https://sabeeh.medium.com/using-github-actions-as-a-job-scheduler-for-r-scripts-7b92539372f4)
