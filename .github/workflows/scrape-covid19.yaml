@@ -1,10 +1,10 @@
 name: Scrape covid19 risk area
 on:
   schedule:
-    - cron: '30 9,12,15,19,22 * * *'
-    #- cron: '30 1,4,7,11,14 * * *'   
-    # UTC time = sahnghai time - 8 hours
-    
+    - cron: '30 6,12,4, * * *' 
+   #- cron: '30 12,18,22 * * *'  # CST
+    # UTC time vs CST Asia/Shanghai time
+    # see https://www.worldtimeserver.com/time-zones/utc-to-cst/
   push:
     branches: main
   # Allows you to run this workflow manually from the Actions tab
