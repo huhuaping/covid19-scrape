@@ -13,7 +13,7 @@ cat("Downloading covid19 risk area data...")
 
 
 #==== start the RSelenium environment====
-driver <- rsDriver(browser=c("firefox"),port = 4444L)
+driver <- rsDriver(browser=c("firefox"),port = 4445L)
 Sys.sleep(5)
 rd <- driver[["client"]]
 rd$setTimeout(type = 'page load', milliseconds = 20000) 
@@ -106,24 +106,31 @@ if (time_tar > time_check) {
   Sys.sleep(0.5)
   cat("step 3: get yesterday new cases numbers. \n", sep = " ")
   
-  
-  ## step 4: get current covid19 cases numbers
+  ## step 4: get covid19 nonsense cases numbers
   xpath_target <- "p[contains(@class, 'subBlock3')]"
+  cases_nonsense <- get_childText(nodes = elms_areablock,xpath = xpath_target)
+  Sys.sleep(0.5)
+  cat("step 4: get covid19 nonsense cases numbers. \n", sep = " ")
+  
+  
+  ## step 5: get current covid19 cases numbers
+  xpath_target <- "p[contains(@class, 'subBlock4')]"
   cases_current <- get_childText(nodes = elms_areablock,xpath = xpath_target)
   Sys.sleep(0.5)
-  cat("step 4: get current covid19 cases numbers. \n", sep = " ")
+  cat("step 5: get current covid19 cases numbers. \n", sep = " ")
   
   
-  ## step 5: get risk area numbers
-  xpath_target <- "p[contains(@class, 'subBlock4')]"
+  ## step 6: get risk area numbers
+  xpath_target <- "p[contains(@class, 'subBlock5')]"
   risk_area <- get_childText(nodes = elms_areablock,xpath = xpath_target)
   Sys.sleep(0.5)
-  cat("step 5: get risk area numbers. \n", sep = " ")
+  cat("step 6: get risk area numbers. \n", sep = " ")
   
   
   # construct tibble
   tbl_cases <- tibble(area_block = class_areablock,
                       area_name = area_name,
+                      cases_nonsense = cases_nonsense,
                       cases_newadd = cases_newadd,
                       cases_current = cases_current,
                       risk_area = risk_area,
@@ -148,7 +155,7 @@ if (time_tar > time_check) {
   cat("Finnaly,  write data table out. \n", sep = " ")
   
   # add to my database
-  dbWriteTable(mydb, "area_case", 
+  dbWriteTable(mydb, "area_case_nonsense", 
                tbl_cases,
                append=TRUE,overwite=FALSE)
   cat(paste0("Add ", nrow(tbl_cases), " rows to sql table 'area_case'. \n"))

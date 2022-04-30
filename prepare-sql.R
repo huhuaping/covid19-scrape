@@ -35,7 +35,7 @@ dbCreateTable(mydb, "area_risk",df_na)
 #==== create table area_case ====
 ## df NA
 names_tar<- c('index', 'area_block', 'area_name', 
-              'cases_newadd', 'cases_current', 
+              'cases_newadd',"cases_nonsense", 'cases_current', 
               'risk_area',
               'time_raw', 'time_stamp')
 df_na <- as_tibble(matrix(rep(NA,length(names_tar)),nrow = 1),
@@ -44,7 +44,7 @@ df_na <- as_tibble(matrix(rep(NA,length(names_tar)),nrow = 1),
   mutate_at(vars(contains("cases_")), as.character)
 
 ## create table
-dbCreateTable(mydb, "area_case",df_na)
+dbCreateTable(mydb, "area_case_nonsense",df_na)
 
 
 
@@ -63,7 +63,7 @@ dbWriteTable(mydb, "area_case",
 
 
 # show me the database table
-check_out<- tbl(mydb, "area_risk") %>% 
+check_out<- tbl(mydb, "area_case_nonsense") %>% 
   as_tibble() %>%
   #tail() %>%
   mutate(time_public = lubridate::as_datetime(time_public,
@@ -79,7 +79,7 @@ check_out<- dbReadTable(mydb, "area_case") %>%
                                         tz='Asia/Shanghai'))
 
 ## remove table
-dbRemoveTable(mydb, "area_risk")
+dbRemoveTable(mydb, "area_case_nonsense")
 
 # list all tables
 dbListTables(mydb)
