@@ -81,8 +81,27 @@ check_out<- dbReadTable(mydb, "area_case") %>%
 ## remove table
 dbRemoveTable(mydb, "area_case_nonsense")
 
+
+
 # list all tables
 dbListTables(mydb)
+
+# disconnect to my database
+dbDisconnect(mydb)
+
+#====daily inspection=====
+
+# connect to database file
+mydb <- dbConnect(RSQLite::SQLite(), "data/sql/covid19-dxy.db")
+
+dbListTables(mydb)
+
+check_out <- dbReadTable(mydb, "area_risk") %>%
+  #tail() %>%
+  mutate(#time_public = lubridate::as_datetime(time_public,
+    #                                     tz='Asia/Shanghai'),
+    time_stamp = lubridate::as_datetime(time_stamp,
+                                        tz='Asia/Shanghai'))
 
 # disconnect to my database
 dbDisconnect(mydb)
