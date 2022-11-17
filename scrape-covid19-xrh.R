@@ -1,9 +1,14 @@
 # Scrapes covid19 risk area from DXY and turns them into structured data for use by the TrentonTracker API
 
 library(tidyverse)
-#library(RSelenium)
 library(dplyr)
-library(lubridate)
+require(magrittr)
+require(lubridate)
+
+#require(XML)
+require(httr)
+require(rvest)
+require(jsonlite)
 
 library(DBI)
 require(dbplyr)
@@ -11,13 +16,6 @@ require(RSQLite)
 
 cat("Downloading covid19 risk area data...")
 
-
-#==== start the RSelenium environment====
-driver <- rsDriver(browser=c("firefox"),port = 4445L)
-Sys.sleep(5)
-rd <- driver[["client"]]
-rd$setTimeout(type = 'page load', milliseconds = 20000) 
-rd$maxWindowSize()
 
 #==== part 0 prepare SQL ====
 
@@ -167,6 +165,81 @@ if (time_tar > time_check) {
 }
 
 #==== part 2 scrape risk area =====
+
+cst_now <- now(tzone = "Asia/Shanghai") 
+gmt_now <- with_tz(cst_now, tzone = "UCT")
+num_now <- as.numeric(gmt_now)
+par_now <- floor(num_now/60) # 
+
+## generate url
+url_json <- paste0(
+  "https://file1.dxycdn.com/2021/0202/196/1680100273140422643-135.json?t=",
+  par_now)
+
+## request
+r <- httr::GET(url_json)
+
+re_header <- httr::headers(r)
+
+## important information
+num8 <- as.numeric(str_extract(url_json,"(\\d{8}$)"))
+cst_date <- re_header$date %>%
+  str_replace_all(., "(.+\\, )|( GMT)", "") %>%
+  lubridate::parse_date_time(., orders = " dbY HMS", tz = "UCT") %>%
+  with_tz(., tzone =  "Asia/Shanghai")
+cst_modify <- re_header$`last-modified` %>%
+  str_replace_all(., "(.+\\, )|( GMT)", "") %>%
+  lubridate::parse_date_time(., orders = " dbY HMS", tz = "UCT") %>%
+  with_tz(., tzone =  "Asia/Shanghai")
+
+## calculate table for check
+tbl_header <- tibble(
+  now_cst = cst_now,
+  now_gmt = gmt_now,
+  now_num = num_now,
+  now_par = par_now,
+  num8 = as.numeric(str_extract(url_json,"(\\d{8}$)")),
+  num10 = re_header$`ali-swift-global-savetime`,
+  gmt_date = re_header$date,
+  gmt_modify = re_header$`last-modified`,
+  gmt_save = re_header$`x-swift-savetime`,
+  num_chache = as.numeric(re_header$`x-swift-cachetime`)
+) %>%
+  #tidy date time gmt
+  mutate_at(
+    dplyr::vars(starts_with("gmt_")),
+    ~str_replace_all(.x, "(.+\\, )|( GMT)", "") ) %>%
+  mutate_at(
+    dplyr::vars(starts_with("gmt_")),
+    ~ lubridate::parse_date_time(.x, orders = " dbY HMS", tz = "UCT")
+  ) %>%
+  # gmt to cst
+  mutate(
+    cst_date = with_tz(gmt_date, tzone =  "Asia/Shanghai"),
+    cst_modify = with_tz(gmt_modify,tzone = "Asia/Shanghai"),
+    cst_save = with_tz(gmt_save, tzone = "Asia/Shanghai")) 
+
+
+
+# to html and text
+docs <- read_html(r) %>%
+  html_text(.) %>%
+  # to json
+  jsonlite::fromJSON(.) 
+
+# to tibble
+tbl_risk <- docs %>%
+  .$data %>%
+  unnest(dangerPros) %>%
+  unnest(dangerAreas)  %>%
+  # add identification information
+  add_column(cst_date = cst_date, .before = "dangerCount") %>%
+  add_column(cst_modify = cst_modify, .before = "dangerCount")%>%
+  add_column(index = 1:nrow(.), .before = "dangerCount")
+
+# demo table for SQL prepare, run only once!
+#tbl_risk %>%  head(1) %>% write_rds(., "data/sql/demo_risk.rds")
+
 
 if (time_tar > time_check) {
  
