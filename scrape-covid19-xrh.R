@@ -45,7 +45,7 @@ rd$maxWindowSize()
 cat("navigate home page...")
 url_tar <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 rd$navigate(url_tar)
-Sys.sleep(5)
+Sys.sleep(10)
 
 ## response header
 cat("obtain access and modify datetime...")
