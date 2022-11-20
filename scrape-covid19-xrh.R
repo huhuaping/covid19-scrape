@@ -45,11 +45,11 @@ rd$maxWindowSize()
 cat("navigate home page...")
 url_tar <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 rd$navigate(url_tar)
-Sys.sleep(2)
+Sys.sleep(5)
 
 ## response header
 cat("obtain access and modify datetime...")
-r <- httr::GET(url_tar)
+r <- httr::GET(url_tar, httr::timeout(90))
 re_header <- httr::headers(r)
 cst_modify <- re_header$`last-modified` %>%
   str_replace_all(., "(.+\\, )|( GMT)", "") %>%
