@@ -19,9 +19,6 @@ jobs:
   generate-data:
     # The type of runner that the job will run on
     runs-on: macos-latest
-    strategy:
-      matrix:
-        firefox: [ '84.0', 'latest-beta', 'latest-devedition', 'latest-esr', 'latest' ]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -48,8 +45,6 @@ jobs:
         shell: Rscript {0}
   
       - uses: browser-actions/setup-firefox@latest
-        with:
-          firefox-version: ${{ matrix.firefox }}
       - run: firefox --version
       
       - name: Scrape the data
