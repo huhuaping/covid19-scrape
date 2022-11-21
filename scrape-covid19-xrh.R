@@ -38,6 +38,7 @@ cat("start Selenium headless...")
 rD <- rsDriver(browser=c("firefox"))
 Sys.sleep(5)
 rd <- rD[["client"]]
+rd$open()
 rd$setTimeout(type = 'page load', milliseconds = 20000) 
 rd$maxWindowSize()
 
@@ -45,7 +46,7 @@ rd$maxWindowSize()
 cat("navigate home page...")
 url_tar <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 rd$navigate(url_tar)
-Sys.sleep(10)
+Sys.sleep(5)
 
 ## response header
 cat("obtain access and modify datetime...")
@@ -80,11 +81,12 @@ cst_pub <- docx %>%
 
 # quit selenium and release process
 cat("quit selenium and release process...")
-rd$closeServer()
+#rd$closeServer()
 rd$close()
-rm(rd)
-rm(rD)
-gc()
+rD$server$stop()
+#rm(rd)
+#rm(rD)
+#gc()
 
 # ==== help function ====
 json_2tbl <- function(docs = docx, script = script_tar){
