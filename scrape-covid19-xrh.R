@@ -27,15 +27,15 @@ cat("start Selenium headless...")
 #               port=4446L, 
 #               extraCapabilities = eCaps) 
 
-#rD <- RSelenium::rsDriver(
-#  browser = "firefox",
-#  extraCapabilities = list(
-#   "moz:firefoxOptions" = list(
-#      args = list('--headless')
-#    )
-#  )
-#)
-rD <- rsDriver(browser=c("firefox"))
+rD <- RSelenium::rsDriver(
+  browser = "firefox",
+  extraCapabilities = list(
+   "moz:firefoxOptions" = list(
+      args = list('--headless')
+    )
+  )
+)
+#rD <- rsDriver(browser=c("firefox"))
 Sys.sleep(5)
 rd <- rD[["client"]]
 #rd$open()
