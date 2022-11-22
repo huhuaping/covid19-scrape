@@ -27,16 +27,16 @@ cat("start Selenium headless...")
 #               port=4446L, 
 #               extraCapabilities = eCaps) 
 
-rD <- RSelenium::rsDriver(
-  browser = "firefox",
-  extraCapabilities = list(
-   "moz:firefoxOptions" = list(
-      args = list('--headless')
-    )
-  )
-)
-#rD <- rsDriver(browser=c("firefox"))
-Sys.sleep(5)
+#rD <- RSelenium::rsDriver(
+#  browser = "firefox",
+#  extraCapabilities = list(
+#   "moz:firefoxOptions" = list(
+#      args = list('--headless')
+#    )
+#  )
+#)
+rD <- rsDriver(browser=c("firefox"),port = 4445L)
+Sys.sleep(2)
 rd <- rD[["client"]]
 #rd$open()
 rd$setTimeout(type = 'page load', milliseconds = 20000) 
@@ -46,7 +46,7 @@ rd$maxWindowSize()
 cat("navigate home page...")
 url_tar <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 rd$navigate(url_tar)
-Sys.sleep(5)
+Sys.sleep(3)
 
 ## response header
 cat("obtain access and modify datetime...")
@@ -196,15 +196,15 @@ cat("write table append to mySQL...")
 dbWriteTable(mydb, "case", 
              tbl_case,
              append=TRUE,overwite=FALSE)
-Sys.sleep(0.5)
+Sys.sleep(0.2)
 dbWriteTable(mydb, "area_risk", 
              tbl_risk,
              append=TRUE,overwite=FALSE)
-Sys.sleep(0.5)
+Sys.sleep(0.2)
 dbWriteTable(mydb, "case_recent", 
              tbl_case_recent,
              append=TRUE,overwite=FALSE)
-Sys.sleep(0.5)
+Sys.sleep(0.2)
 cat("disconnect to mySQL...")
 dbDisconnect(mydb)
 

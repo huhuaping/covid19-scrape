@@ -44,8 +44,8 @@ jobs:
           renv::restore()
         shell: Rscript {0}
   
-      #- uses: browser-actions/setup-firefox@latest
-      #- run: firefox --version
+      - uses: browser-actions/setup-firefox@latest
+      - run: firefox --version
       
       - name: Scrape the data
         run: |
