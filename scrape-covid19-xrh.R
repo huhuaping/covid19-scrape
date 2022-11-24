@@ -38,8 +38,8 @@ cat("start Selenium headless...")
 rD <- rsDriver(browser=c("firefox"))
 Sys.sleep(2)
 rd <- rD[["client"]]
-#rd$open()
-rd$setTimeout(type = 'page load', milliseconds = 20000) 
+rd$open()
+#rd$setTimeout(type = 'page load', milliseconds = 20000) 
 rd$maxWindowSize()
 
 # navigate home page
