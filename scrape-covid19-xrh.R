@@ -41,9 +41,9 @@ rD <- rsDriver(browser=c("firefox"), port = 4567L,
                )
 Sys.sleep(2)
 rd <- rD[["client"]]
-rd$open()
+#rd$open()
 #rd$setTimeout(type = 'page load', milliseconds = 20000) 
-rd$maxWindowSize()
+#rd$maxWindowSize()
 
 # navigate home page
 cat("navigate home page...")

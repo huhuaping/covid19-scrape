@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "generate-data"
   generate-data:
     # The type of runner that the job will run on
-    runs-on: macos-latest
+    runs-on: windows-latest #macos-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -35,7 +35,7 @@ jobs:
         
       - uses: actions/cache@v2
         with:
-          path: ~/Library/Application Support/renv #~/.local/share/renv
+          path: %LOCALAPPDATA%/renv #~/Library/Application Support/renv #~/.local/share/renv
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: |
             ${{ runner.os }}-renv-
