@@ -35,7 +35,10 @@ cat("start Selenium headless...")
 #    )
 #  )
 #)
-rD <- rsDriver(browser=c("firefox"))
+rD <- rsDriver(browser=c("firefox"), port = 4567L,
+               #check = FALSE,
+               geckover = "0.31.0"
+               )
 Sys.sleep(2)
 rd <- rD[["client"]]
 rd$open()
