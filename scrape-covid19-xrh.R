@@ -39,9 +39,9 @@ cat("start Selenium headless...")
 #  )
 #)
 rD <- rsDriver(browser=c("firefox"), 
-               port = 4566L#,
+               port = 4567L,
                #check = FALSE,
-               #geckover = "0.32.0"
+               geckover = "0.32.0"
                )
 Sys.sleep(2)
 rd <- rD[["client"]]
@@ -196,8 +196,8 @@ tbl_case_recent <- tbl_RecentStatV2 %>%
 # ==== add to my database ====
 cat("connect to mySQL...")
 mydb <- dbConnect(RSQLite::SQLite(), 
-                  "data/sql/covid19-dxy.db",
-                  synchronous = NULL)
+                  "data/sql/covid19-dxy.db" #,  synchronous = NULL
+                  )
 
 cat("write table append to mySQL...")
 dbWriteTable(mydb, "case", 
