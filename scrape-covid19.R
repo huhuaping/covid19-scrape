@@ -1,13 +1,13 @@
 # Scrapes covid19 risk area from DXY and turns them into structured data for use by the TrentonTracker API
 
-library(tidyverse)
-library(RSelenium)
-library(dplyr)
-library(lubridate)
+#library(tidyverse)
+##library(RSelenium)
+#library(dplyr)
+#library(lubridate)
 
-library(DBI)
-require(dbplyr)
-require(RSQLite)
+#library(DBI)
+#require(dbplyr)
+#require(RSQLite)
 
 cat("Downloading covid19 risk area data...")
 

@@ -1,10 +1,13 @@
 # Scrapes covid19 risk area from DXY and turns them into structured data for use by the TrentonTracker API
 cat("load required pkgs...")
-library(tidyverse)
+#library(tidyverse)
 library(dplyr)
 require(magrittr)
 require(lubridate)
 library(RSelenium)
+require(stringr)
+require(tibble)
+require(tidyr)
 #require(XML)
 require(httr)
 require(rvest)
@@ -27,18 +30,19 @@ cat("start Selenium headless...")
 #               port=4446L, 
 #               extraCapabilities = eCaps) 
 
-rD <- RSelenium::rsDriver(
-  browser = "firefox",
-  extraCapabilities = list(
-   "moz:firefoxOptions" = list(
-      args = list('--headless')
-    )
-  )
-)
-#rD <- rsDriver(browser=c("firefox"), port = 4567L,
-#               #check = FALSE,
-#               geckover = "0.30.0"
-#               )
+#rD <- RSelenium::rsDriver(
+#  browser = "firefox",
+#  extraCapabilities = list(
+#   "moz:firefoxOptions" = list(
+#      args = list('--headless')
+#    )
+#  )
+#)
+rD <- rsDriver(browser=c("firefox"), 
+               port = 4566L#,
+               #check = FALSE,
+               #geckover = "0.32.0"
+               )
 Sys.sleep(2)
 rd <- rD[["client"]]
 #rd$open()
@@ -49,7 +53,7 @@ rd <- rD[["client"]]
 cat("navigate home page...")
 url_tar <- "https://ncov.dxy.cn/ncovh5/view/pneumonia"
 rd$navigate(url_tar)
-Sys.sleep(3)
+Sys.sleep(2)
 
 ## response header
 cat("obtain access and modify datetime...")
