@@ -30,19 +30,19 @@ cat("start Selenium headless...")
 #               port=4446L, 
 #               extraCapabilities = eCaps) 
 
-#rD <- RSelenium::rsDriver(
-#  browser = "firefox",
-#  extraCapabilities = list(
-#   "moz:firefoxOptions" = list(
-#      args = list('--headless')
-#    )
-#  )
-#)
-rD <- rsDriver(browser=c("firefox"), 
-               port = 4567L,
-               #check = FALSE,
-               geckover = "0.32.0"
-               )
+rD <- RSelenium::rsDriver(
+  browser = "firefox",
+  extraCapabilities = list(
+   "moz:firefoxOptions" = list(
+      args = list('--headless')
+    )
+  )
+)
+#rD <- rsDriver(browser=c("firefox"), 
+#               port = 4567L,
+#               #check = FALSE,
+#               geckover = "0.32.0"
+#               )
 Sys.sleep(2)
 rd <- rD[["client"]]
 #rd$open()
@@ -124,12 +124,14 @@ cat("convert json to table...")
 script_tar <- "getAreaStat"
 tbl_areaStat <- json_2tbl(docs = docx, script = script_tar) %>%
   arrange(locationId)
+Sys.sleep(0.5)
 
 # get table `fetchRecentStatV2`
 ## do not use `fetchRecentStat`
 script_tar <- "fetchRecentStatV2"
 tbl_RecentStatV2 <- json_2tbl(docs = docx, script = script_tar) %>%
   arrange(locationId)
+Sys.sleep(0.5)
 
 # ==== tidy table ====
 
