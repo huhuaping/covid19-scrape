@@ -1,7 +1,7 @@
 
 #==== prepare sql ====
 
-library(tidyverse)
+#library(tidyverse)
 #library(RSelenium)
 library(dplyr)
 library(lubridate)

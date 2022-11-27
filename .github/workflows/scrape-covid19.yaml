@@ -18,15 +18,16 @@ jobs:
   # This workflow contains a single job called "generate-data"
   generate-data:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest #macos-latest
+    runs-on: macos-12 #ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Install cURL Headers
-        run:  |
-          sudo apt-get update
-          sudo apt install -y libcurl4-openssl-dev
+      
+      #- name: Install cURL Headers
+      #  run:  |
+      #    sudo apt-get update
+      #    sudo apt install -y libcurl4-openssl-dev
       
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -39,7 +40,7 @@ jobs:
         
       - uses: actions/cache@v2
         with:
-          path: ~/.local/share/renv #~/Library/Application Support/renv
+          path: ~/Library/Application Support/renv #~/.local/share/renv
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: |
             ${{ runner.os }}-renv-
