@@ -198,9 +198,10 @@ tbl_case_recent <- tbl_RecentStatV2 %>%
 # ==== add to my database ====
 cat("connect to mySQL...")
 mydb <- dbConnect(RSQLite::SQLite(), 
-                  "data/sql/covid19-dxy.db" #,  synchronous = NULL
+                  "data/sql/covid19-dxy.db",  synchronous = NULL
                   )
 
+Sys.sleep(0.2)
 cat("write table append to mySQL...")
 dbWriteTable(mydb, "case", 
              tbl_case,
