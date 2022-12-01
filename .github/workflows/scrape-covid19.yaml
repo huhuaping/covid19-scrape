@@ -21,9 +21,9 @@ jobs:
     runs-on: macos-12 #ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      
+      - name: Check out repository
+        uses: actions/checkout@v3
+
       #- name: Install cURL Headers
       #  run:  |
       #    sudo apt-get update
@@ -49,8 +49,8 @@ jobs:
           renv::restore()
         shell: Rscript {0}
   
-      - uses: browser-actions/setup-firefox@latest
-      - run: firefox --version
+      #- uses: browser-actions/setup-firefox@latest
+      #- run: firefox --version
       
       - name: Scrape the data
         run: |
@@ -62,3 +62,6 @@ jobs:
           git add -A
           git commit -m 'New Executive Order signed - data updated!' || echo "No changes to commit"
           git push
+          env:
+        REPO_KEY: ${{secrets.GITHUB_TOKEN}}
+        username: github-actions
