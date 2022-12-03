@@ -62,6 +62,3 @@ jobs:
           git add -A
           git commit -m 'New Executive Order signed - data updated!' || echo "No changes to commit"
           git push
-          env:
-        REPO_KEY: ${{secrets.GITHUB_TOKEN}}
-        username: github-actions

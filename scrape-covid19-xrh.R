@@ -22,25 +22,26 @@ require(RSQLite)
 #driver <- rsDriver(browser=c("firefox"))
 #rd <- driver[["client"]]
 cat("start Selenium headless...")
-#eCaps <- list(chromeOptions = list(
-#  args = c('--headless', '--disable-gpu', '--window-size=1280,800')
-#))
-#rD <- rsDriver(browser=c("chrome"), verbose = TRUE, 
-#               chromever="107.0.5304.62", 
-#               port=4446L, 
-#               extraCapabilities = eCaps) 
+eCaps <- list(chromeOptions = list(
+  args = c('--headless', '--disable-gpu', '--window-size=1280,800')
+))
+rD <- rsDriver(browser=c("chrome"), verbose = TRUE, 
+               chromever="107.0.5304.62", 
+               port=4446L, 
+               extraCapabilities = eCaps) 
 
-rD <- RSelenium::rsDriver(
-  browser = "firefox",
-  extraCapabilities = list(
-   "moz:firefoxOptions" = list(
-      args = list('--headless')
-    )
-  )
-)
+#rD <- RSelenium::rsDriver(
+#  browser = "firefox",
+#  extraCapabilities = list(
+#   "moz:firefoxOptions" = list(
+#      args = list('--headless')
+#    )
+#  )
+#)
+
 #rD <- rsDriver(browser=c("firefox"), 
-#               port = 4567L,
-#               #check = FALSE,
+#              port = 4565L,
+#               check = FALSE,
 #               geckover = "0.32.0"
 #               )
 Sys.sleep(2)
